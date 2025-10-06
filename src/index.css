@@ -1,0 +1,29 @@
+@import "tailwindcss";
+@theme {
+  --color-success: #428445;
+  --color-error: #EB001B;
+  --color-main: #F30;
+  --color-border: #EEE;
+}
+@layer base {
+  .form{
+		@apply relative max-w-full space-y-4;
+		.form-group{
+			@apply space-y-2 space-x-2;
+			label{
+				@apply inline-block font-black; 
+        &.required{ @apply after:content-["*"] after:text-red-500; }
+			}
+      input.form-control{ 
+        &[type="text"]{
+          @apply block w-full py-1.5 px-5 border border-border focus:border-main; 
+          border-radius: 10px;
+        }
+      }
+		}
+		.form-success{ @apply hidden font-bold items-center gap-2 text-success; }
+		.form-error{ @apply hidden font-bold items-center gap-2 text-error; }
+	}
+}
+.ant-modal{ top: 10px; }
+.tox-promotion{ display: none; }
