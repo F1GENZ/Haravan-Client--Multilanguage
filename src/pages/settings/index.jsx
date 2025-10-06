@@ -317,6 +317,10 @@ const Settings = () => {
         isDefault: lang.id === id
       }));
 
+      // Get the default language code
+      const defaultLang = updatedLanguages.find(lang => lang.isDefault);
+
+      // Update languages metafield
       await updateFieldMutation.mutateAsync({
         type: 'shop',
         objectid: '0',
@@ -327,6 +331,30 @@ const Settings = () => {
         namespace: 'hrvmultilang_config',
         metafieldid: languagesMetafield.id,
       });
+
+      // Create/update default_language metafield for easy Liquid access
+      const defaultLangMetafield = languagesData?.find(m => m.key === 'default_language');
+      
+      if (defaultLangMetafield) {
+        // Update existing
+        await updateFieldMutation.mutateAsync({
+          type: 'shop',
+          objectid: '0',
+          key: 'default_language',
+          value: defaultLang.code,
+          namespace: 'hrvmultilang_config',
+          metafieldid: defaultLangMetafield.id,
+        });
+      } else {
+        // Create new
+        await createFieldMutation.mutateAsync({
+          type: 'shop',
+          objectid: '0',
+          key: 'default_language',
+          value: defaultLang.code,
+          namespace: 'hrvmultilang_config',
+        });
+      }
 
       await refetchLanguages();
       message.success('Đã đặt ngôn ngữ mặc định!');
@@ -425,11 +453,12 @@ const Settings = () => {
       // Get current languages metafield
       const languagesMetafield = languagesData?.find(m => m.key === 'languages');
       
+      const isFirstLanguage = languages.length === 0;
       const newLang = { 
         id: Date.now(), 
         code: values.code, 
         name: selectedLang.name,
-        isDefault: languages.length === 0, // First language is default
+        isDefault: isFirstLanguage, // First language is default
       };
       
       const updatedLanguages = [...languages, newLang];
@@ -454,11 +483,32 @@ const Settings = () => {
         // Create new metafield
         await createFieldMutation.mutateAsync(metafieldData);
       }
-      
-      // Force refetch after a small delay to ensure server has updated
-      setTimeout(async () => {
-        await refetchLanguages();
-      }, 500);
+
+      // If first language, also create default_language metafield
+      if (isFirstLanguage) {
+        const defaultLangMetafield = languagesData?.find(m => m.key === 'default_language');
+        
+        if (defaultLangMetafield) {
+          await updateFieldMutation.mutateAsync({
+            type: 'shop',
+            objectid: '0',
+            key: 'default_language',
+            value: newLang.code,
+            namespace: 'hrvmultilang_config',
+            metafieldid: defaultLangMetafield.id,
+          });
+        } else {
+          await createFieldMutation.mutateAsync({
+            type: 'shop',
+            objectid: '0',
+            key: 'default_language',
+            value: newLang.code,
+            namespace: 'hrvmultilang_config',
+          });
+        }
+      }
+
+      await refetchLanguages();
       
       message.success('Thêm ngôn ngữ thành công!');
 
