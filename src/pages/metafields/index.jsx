@@ -122,8 +122,19 @@ const Metafields = () => {
     }
 
     // Kiểm tra OpenAI API key
-    const openaiKey = localStorage.getItem('openai_api_key');
-    if (!openaiKey || openaiKey.trim() === '') {
+    const openaiSettings = localStorage.getItem('openai_settings');
+    let apiKey = '';
+    
+    if (openaiSettings) {
+      try {
+        const settings = JSON.parse(openaiSettings);
+        apiKey = settings.apiKey || '';
+      } catch (e) {
+        // Invalid JSON, treat as empty
+      }
+    }
+    
+    if (!apiKey || apiKey.trim() === '') {
       message.error({
         content: 'Chưa cấu hình OpenAI API Key! Vui lòng vào Settings → API Configuration để nhập API Key.',
         duration: 5,
