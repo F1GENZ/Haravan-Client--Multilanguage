@@ -906,16 +906,6 @@ const Settings = () => {
                         />
                       );
                     }
-                    if (record.key === 'showSymbol') {
-                      return (
-                        <input
-                          type="checkbox"
-                          className="w-5! h-5! cursor-pointer!"
-                          checked={currencySettings.showSymbol}
-                          onChange={(e) => handleCurrencySettingsChange('showSymbol', e.target.checked)}
-                        />
-                      );
-                    }
                     return value;
                   }
                 }
@@ -923,7 +913,6 @@ const Settings = () => {
               dataSource={[
                 { key: 'enabled', feature: 'Bật chuyển đổi tiền tệ' },
                 { key: 'autoDetect', feature: 'Tự động phát hiện tiền tệ theo ngôn ngữ' },
-                { key: 'showSymbol', feature: 'Hiển thị ký hiệu tiền tệ ($, €, ¥)' },
               ]}
               pagination={false}
               size="small"
