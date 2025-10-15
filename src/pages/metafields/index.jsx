@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useSearchParams } from "react-router";
 import { useLocation } from "react-router-dom";
 import { Button, Tabs, Flex, Spin, Space, message, Modal } from 'antd';
-import { TranslationOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { TranslationOutlined, ExclamationCircleOutlined, CopyOutlined } from '@ant-design/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { metafieldsService } from '../../common/MetafieldsServices';
 import { dataService } from '../../common/DataServices';
@@ -65,10 +65,18 @@ const Metafields = () => {
   const createMetafieldMutation = metafieldsService.useCreateField();
   const updateMetafieldMutation = metafieldsService.useUpdateField();
 
-  // Fetch product data if type is 'product' and we have a valid ID
+  // Fetch product or collection data based on type
   const { data: product_data, isLoading: product_loading } = dataService.useGetProduct(
     type === 'product' && objectid !== '0' ? objectid : null
   );
+
+  const { data: collection_data, isLoading: collection_loading } = dataService.useGetCollection(
+    type === 'collection' && objectid !== '0' ? objectid : null
+  );
+
+  // Use the appropriate data based on type
+  const item_data = type === 'product' ? product_data : collection_data;
+  const item_loading = type === 'product' ? product_loading : collection_loading;
 
   // Check if current tab has changes
   useEffect(() => {
@@ -109,6 +117,25 @@ const Metafields = () => {
       // No changes, switch tab directly
       setActiveTab(newTabKey);
     }
+  };
+
+  // Sync function - copy left to right
+  const handleSync = () => {
+    const tabIndex = parseInt(activeTab);
+    const currentRef = tabRefs.current[tabIndex];
+    
+    if (!currentRef) {
+      message.error('Không tìm thấy form!');
+      return;
+    }
+
+    // Get source values from left form
+    const sourceValues = currentRef.getSourceValues();
+    
+    // Set to right form (translation form)
+    currentRef.setTranslatedValues(sourceValues);
+    
+    message.success('Đã sử dụng dữ liệu gốc!');
   };
 
   // Auto translate function
@@ -220,6 +247,8 @@ const Metafields = () => {
         errorMessage = 'OpenAI API Key không hợp lệ hoặc đã hết hạn!';
       } else if (error.response?.status === 429) {
         errorMessage = 'Quá nhiều yêu cầu! Vui lòng đợi một chút và thử lại.';
+      } else if (error.message) {
+        errorMessage = `Lỗi: ${error.message}`;
       }
       
       message.error({
@@ -319,7 +348,7 @@ const Metafields = () => {
     label: <strong>{lang.name}</strong>,
     children: <TabMetafields 
       ref={el => tabRefs.current[index] = el} 
-      productData={product_data}
+      productData={item_data}
       customFields={customFields}
       language={lang}
       type={type}
@@ -333,6 +362,12 @@ const Metafields = () => {
         <Flex justify='space-between' align='center' gap={16}>
           <h2 className='text-lg text-red-600 font-semibold mb-0!'>⁉ Chuyển đổi ngôn ngữ</h2>
           <Space>
+            <Button 
+              icon={<CopyOutlined />}
+              onClick={handleSync}
+            >
+              Dùng dữ liệu gốc
+            </Button>
             <Button 
               icon={<TranslationOutlined />}
               onClick={handleAutoTranslate}

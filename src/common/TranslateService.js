@@ -73,7 +73,10 @@ export const translateText = async (text, options = {}) => {
 
     const openai = new OpenAI({
       apiKey: settings.apiKey,
-      dangerouslyAllowBrowser: true // Only for development
+      dangerouslyAllowBrowser: true, // Only for development
+      baseURL: 'https://api.openai.com/v1',
+      timeout: 60000, // 60 seconds timeout
+      maxRetries: 2
     });
 
     const targetLanguageName = LANGUAGE_NAMES[targetLanguage] || targetLanguage;
@@ -114,6 +117,10 @@ export const translateText = async (text, options = {}) => {
       throw new Error('Không có kết nối internet');
     } else if (error.message && error.message.includes('API key')) {
       throw error; // Keep original API key error message
+    } else if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND' || error.message?.includes('fetch failed')) {
+      throw new Error('Không thể kết nối tới OpenAI. Vui lòng kiểm tra kết nối internet hoặc firewall');
+    } else if (error.message?.includes('network') || error.message?.includes('Connection')) {
+      throw new Error('Lỗi kết nối mạng. Vui lòng kiểm tra internet và thử lại');
     }
     throw new Error(`Lỗi khi gọi OpenAI API: ${error.message || 'Unknown error'}`);
   }
@@ -161,7 +168,10 @@ export const translateHTML = async (html, options = {}) => {
 
     const openai = new OpenAI({
       apiKey: settings.apiKey,
-      dangerouslyAllowBrowser: true
+      dangerouslyAllowBrowser: true,
+      baseURL: 'https://api.openai.com/v1',
+      timeout: 60000, // 60 seconds timeout
+      maxRetries: 2
     });
 
     const targetLanguageName = LANGUAGE_NAMES[targetLanguage] || targetLanguage;
@@ -203,6 +213,10 @@ export const translateHTML = async (html, options = {}) => {
       throw new Error('Không có kết nối internet');
     } else if (error.message && error.message.includes('API key')) {
       throw error; // Keep original API key error message
+    } else if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND' || error.message?.includes('fetch failed')) {
+      throw new Error('Không thể kết nối tới OpenAI. Vui lòng kiểm tra kết nối internet hoặc firewall');
+    } else if (error.message?.includes('network') || error.message?.includes('Connection')) {
+      throw new Error('Lỗi kết nối mạng. Vui lòng kiểm tra internet và thử lại');
     }
     throw new Error(`Lỗi khi dịch HTML: ${error.message || 'Unknown error'}`);
   }

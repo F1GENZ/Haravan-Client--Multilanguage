@@ -203,7 +203,7 @@ export default class DataService extends BaseService {
         return response.data;
       },
       enabled: !!id, // Only run query if id exists
-    });
+    });   
   };
 
   useCreateProduct = () => {

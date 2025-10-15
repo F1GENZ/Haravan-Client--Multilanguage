@@ -54,7 +54,9 @@ export const useConfigSettings = () => {
     // Built-in fields (always present)
     const builtInFields = [
       { id: 'builtin-1', key: 'title', fieldType: 'string', label: 'Tiêu đề' },
-      { id: 'builtin-2', key: 'description', fieldType: 'html', label: 'Mô tả' },
+      { id: 'builtin-2', key: 'product_type', fieldType: 'string', label: 'Loại sản phẩm' },
+      { id: 'builtin-3', key: 'vendor', fieldType: 'string', label: 'Nhà cung cấp' },
+      { id: 'builtin-4', key: 'description', fieldType: 'html', label: 'Mô tả' },
     ];
 
     if (!configData || configData.length === 0) {
@@ -73,8 +75,8 @@ export const useConfigSettings = () => {
       
       // Get custom fields from metafield and filter out any built-in that might have been saved
       const customFields = (parsed.fields || []).filter(f => 
-        !['builtin-1', 'builtin-2'].includes(f.id) && 
-        !['title', 'description'].includes(f.key)
+        !['builtin-1', 'builtin-2', 'builtin-3', 'builtin-4'].includes(f.id) && 
+        !['title', 'description', 'product_type', 'vendor'].includes(f.key)
       );
       
       // Combine built-in fields with custom fields from metafield

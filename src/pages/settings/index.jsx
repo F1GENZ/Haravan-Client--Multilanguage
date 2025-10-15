@@ -537,13 +537,12 @@ const Settings = () => {
     // Kiểm tra nếu là built-in field
     const isBuiltIn = 
       fieldToDelete && (
-        fieldToDelete.key === 'title' || 
-        fieldToDelete.key === 'description' ||
-        ['builtin-1', 'builtin-2'].includes(fieldToDelete.id)
+        ['title', 'description', 'product_type', 'vendor'].includes(fieldToDelete.key) ||
+        ['builtin-1', 'builtin-2', 'builtin-3', 'builtin-4'].includes(fieldToDelete.id)
       );
       
     if (isBuiltIn) {
-      message.error('Không thể xóa trường mặc định "title" hoặc "description"!');
+      message.error('Không thể xóa trường mặc định!');
       return;
     }
     
@@ -566,8 +565,8 @@ const Settings = () => {
           const updatedFields = fields
             .filter(field => field.id !== id)
             .filter(f => 
-              !['builtin-1', 'builtin-2'].includes(f.id) && 
-              !['title', 'description'].includes(f.key)
+              !['builtin-1', 'builtin-2', 'builtin-3', 'builtin-4'].includes(f.id) && 
+              !['title', 'description', 'product_type', 'vendor'].includes(f.key)
             );
 
           await updateFieldMutation.mutateAsync({
@@ -606,8 +605,8 @@ const Settings = () => {
 
       // Filter out built-in fields (title, description) before saving
       const customFieldsOnly = currentFields.filter(f => 
-        !['builtin-1', 'builtin-2'].includes(f.id) && 
-        !['title', 'description'].includes(f.key)
+        !['builtin-1', 'builtin-2', 'builtin-3', 'builtin-4'].includes(f.id) && 
+        !['title', 'description', 'product_type', 'vendor'].includes(f.key)
       );
       
       const updatedFields = [...customFieldsOnly, newField];
@@ -726,9 +725,8 @@ const Settings = () => {
       render: (_, record) => {
         // Không hiển thị nút xóa cho built-in fields
         const isBuiltIn = 
-          record.key === 'title' || 
-          record.key === 'description' || 
-          ['builtin-1', 'builtin-2'].includes(record.id);
+          ['title', 'description', 'product_type', 'vendor'].includes(record.key) ||
+          ['builtin-1', 'builtin-2', 'builtin-3', 'builtin-4'].includes(record.id);
           
         if (isBuiltIn) {
           return <Tag color="green">Trường mặc định</Tag>;
@@ -761,7 +759,7 @@ const Settings = () => {
         <div>
           <Alert
             message="Lưu ý"
-            description="Trường Title và Description là mặc định, luôn luôn có và không thể xóa. Các trường dưới đây là trường bổ sung (custom fields)."
+            description="Trường Title, Description, Product Type và Vendor là mặc định, luôn luôn có và không thể xóa. Các trường dưới đây là trường bổ sung (custom fields)."
             type="info"
             showIcon
             className="mb-4!"
@@ -1099,8 +1097,11 @@ const Settings = () => {
                 { pattern: /^[a-z_]+$/, message: 'Key chỉ được chứa chữ thường và dấu gạch dưới!' },
                 {
                   validator: (_, value) => {
-                    if (value === 'title' || value === 'description') {
-                      return Promise.reject(new Error('Key "title" và "description" là trường mặc định, không thể sử dụng!'));
+                    if (!value) return Promise.resolve();
+                    
+                    const reservedKeys = ['title', 'description', 'product_type', 'vendor'];
+                    if (reservedKeys.includes(value.toLowerCase())) {
+                      return Promise.reject(new Error('Key này là trường mặc định, không thể sử dụng!'));
                     }
                     return Promise.resolve();
                   }
@@ -1117,7 +1118,7 @@ const Settings = () => {
                         <br />
                         <span className="text-xs!">Ví dụ: <code>{type}.metafields.hrvmultilang_{defaultLang.code}.seo_title</code></span>
                         <br />
-                        <span className="text-red-500! text-xs!">⚠️ Không được dùng: title, description</span>
+                        <span className="text-red-500! text-xs!">⚠️ Không được dùng: title, description, product_type, vendor</span>
                       </>
                     );
                   })()}

@@ -52,12 +52,17 @@ const TabMetafields = forwardRef(({ isModalOpen, setIsModalOpen, isLoading, setI
       const initialEditorContent = {};
       
       allFields.forEach(field => {
-        // Map productData keys
+        // Map data keys - works for both product and collection
         let value = '';
         if (field.key === 'title') {
           value = productData.title || '';
         } else if (field.key === 'description') {
+          // For product: body_html, for collection: description or body_html
           value = productData.body_html || productData.description || '';
+        } else if (field.key === 'product_type') {
+          value = productData.product_type || '';
+        } else if (field.key === 'vendor') {
+          value = productData.vendor || '';
         } else {
           value = productData[field.key] || '';
         }
