@@ -115,9 +115,13 @@ const ProductsPage = () => {
       width: 100,
       render: (images, record) => {
         // Check images array first, then image object
-        const imgSrc = images?.[0]?.src || record.image?.src;
+        let imgSrc = images?.[0]?.src || record.image?.src;
+        // Add _medium suffix for smaller image size (faster load)
+        if (imgSrc) {
+          imgSrc = imgSrc.replace(/\.(jpg|jpeg|png|gif|webp)$/i, '_medium.$1');
+        }
         return imgSrc ? (
-          <img src={imgSrc} alt="" className="w-16 h-16 object-cover rounded" />
+          <img src={imgSrc} alt="" className="w-16 h-16 object-cover rounded" loading="lazy" />
         ) : (
           <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs">
             No img
