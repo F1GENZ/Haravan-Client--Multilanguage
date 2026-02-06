@@ -31,11 +31,10 @@ httpClient.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Clear session and redirect to Haravan install
-      sessionStorage.clear();
-      
-      // Redirect to Haravan install page
-      const baseUrl = import.meta.env.VITE_APP_API_URL.replace(/\/$/, ''); // Remove trailing slash
-      window.location.href = `${baseUrl}/oauth/install/login`;
+      // Redirect to client-side Login page
+      const orgid = sessionStorage.getItem("orgid");
+      sessionStorage.clear(); // Clear old session
+      window.location.href = `/install/login?orgid=${orgid || ''}`;
       
       // Return a never-resolving promise to prevent further error handling
       return new Promise(() => {});
