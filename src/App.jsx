@@ -25,7 +25,8 @@ function App() {
     const isAuthPage = window.location.pathname.startsWith('/install') || window.location.pathname.startsWith('/oauth');
     
     if (!validOrgid && !isAuthPage) {
-       window.location.href = '/install/login';
+       // Redirect to login - preserve orgid if present in URL
+       window.location.href = pOrgid ? `/install/login?orgid=${pOrgid}` : '/install/login';
     }
   }, []); // Run once on mount is safer for redirect logic
   
