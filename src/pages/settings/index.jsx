@@ -60,7 +60,7 @@ const QuotaDisplay = () => {
         <div className="flex! justify-between! mb-2!">
           <Text strong>Quota đã sử dụng</Text>
           <Text type={isEmpty ? 'danger' : isLow ? 'warning' : 'secondary'}>
-            {formatNumber(quota.used)} / {formatNumber(quota.max)} bản dịch
+            {formatNumber(quota.used)} / {formatNumber(quota.max)} lượt dịch
           </Text>
         </div>
         
@@ -73,7 +73,7 @@ const QuotaDisplay = () => {
         />
         
         <div className="flex! justify-between! mt-2!">
-          <Text type="secondary">Còn lại: <Text strong style={{ color: isEmpty ? '#ff4d4f' : isLow ? '#faad14' : '#52c41a' }}>{formatNumber(quota.remaining)}</Text> bản dịch</Text>
+          <Text type="secondary">Còn lại: <Text strong style={{ color: isEmpty ? '#ff4d4f' : isLow ? '#faad14' : '#52c41a' }}>{formatNumber(quota.remaining)}</Text> lượt dịch</Text>
           {isEmpty && (
             <Tag color="red">Hết quota</Tag>
           )}

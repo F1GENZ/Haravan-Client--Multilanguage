@@ -28,7 +28,7 @@ const Introduction = () => {
             Chào mừng đến với F1GENZ Multi-Language
           </Title>
           <Paragraph className="text-lg! text-gray-600!">
-            Giải pháp quản lý đa ngôn ngữ chuyên nghiệp cho Haravan với AI Gemini
+            Giải pháp quản lý đa ngôn ngữ chuyên nghiệp cho Haravan với AI thông minh
           </Paragraph>
         </div>
 
@@ -40,7 +40,7 @@ const Introduction = () => {
               Sức mạnh đa ngôn ngữ trong tầm tay bạn
             </Title>
             <Paragraph className="text-lg! max-w-3xl! mx-auto!">
-              <strong>Haravan Multi Language</strong> là ứng dụng tiên phong tích hợp <Text strong className="text-green-600!">Gemini AI</Text> để 
+              <strong>Haravan Multi Language</strong> là ứng dụng tiên phong tích hợp <Text strong className="text-green-600!">AI thông minh</Text> để 
               tự động dịch và quản lý nội dung sản phẩm, bộ sưu tập sang hơn 200 ngôn ngữ. 
               Giúp bạn tiếp cận thị trường toàn cầu chỉ với vài cú click!
             </Paragraph>
@@ -58,7 +58,7 @@ const Introduction = () => {
               <div className="text-center! p-6! bg-green-50! rounded-lg! h-full!">
                 <TranslationOutlined className="text-5xl! text-green-500! mb-3!" />
                 <Title level={3} className="text-green-600!">AI</Title>
-                <Text className="text-gray-600!">Dịch tự động Gemini AI</Text>
+                <Text className="text-gray-600!">Dịch tự động bằng AI</Text>
               </div>
             </Col>
             <Col xs={24} md={12} lg={6}>
@@ -92,10 +92,10 @@ const Introduction = () => {
                 children: (
                   <div>
                     <Title level={4} className="mb-2!">
-                      🤖 Dịch tự động bằng Gemini AI
+                      🤖 Dịch tự động bằng AI
                     </Title>
                     <Paragraph className="text-base!">
-                      Tích hợp <Tag color="green">Google Gemini AI</Tag> để dịch nội dung tự động, 
+                      Tích hợp <Tag color="green">AI thông minh</Tag> để dịch nội dung tự động, 
                       giữ nguyên định dạng HTML, chất lượng dịch thuật chuyên nghiệp. 
                       Không cần cấu hình API Key - F1GENZ cung cấp sẵn!
                     </Paragraph>
@@ -171,7 +171,7 @@ const Introduction = () => {
                       🔒 Bảo mật & Lưu trữ an toàn
                     </Title>
                     <Paragraph className="text-base!">
-                      Hệ thống sử dụng Gemini AI được cung cấp bởi F1GENZ. 
+                      Hệ thống sử dụng AI được cung cấp bởi F1GENZ. 
                       Dữ liệu của bạn được bảo mật, <Text strong className="text-green-600!">không cần cấu hình API Key</Text>.
                     </Paragraph>
                     <Space wrap>
@@ -251,7 +251,7 @@ const Introduction = () => {
                 <CheckCircleOutlined className="text-3xl! text-orange-500! mb-3!" />
                 <Title level={4} className="text-orange-600! mb-3!">🎯 Chuyên nghiệp & Nhất quán</Title>
                 <Paragraph>
-                  Nội dung được dịch bởi Gemini AI, đảm bảo chất lượng cao. 
+                  Nội dung được dịch bởi AI, đảm bảo chất lượng cao. 
                   Format HTML được giữ nguyên, giao diện đẹp trên mọi ngôn ngữ.
                 </Paragraph>
               </div>

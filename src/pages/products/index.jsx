@@ -407,7 +407,7 @@ const ProductsPage = () => {
             showIcon
             message={
               <span>
-                Quota: <strong>{formatNumber(quota.remaining)}</strong> / {formatNumber(quota.total)} bản dịch còn lại
+                Quota: <strong>{formatNumber(quota.remaining)}</strong> / {formatNumber(quota.total)} lượt dịch còn lại
                 {quota.remaining < 50 && ' - Liên hệ hỗ trợ nếu cần nâng cấp'}
               </span>
             }
@@ -441,7 +441,7 @@ const ProductsPage = () => {
                   type="error"
                   showIcon
                   icon={<WarningOutlined />}
-                  message={`Vượt quota! Cần ${formatNumber(count)} bản dịch, còn lại ${formatNumber(quota.remaining)}. Liên hệ hỗ trợ.`}
+                  message={`Vượt quota! Cần ${formatNumber(count)} lượt dịch, còn lại ${formatNumber(quota.remaining)}. Liên hệ hỗ trợ.`}
                 />
               );
             }

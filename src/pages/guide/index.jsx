@@ -167,7 +167,7 @@ const UserGuide = () => {
               header={
                 <Space>
                   <ApiOutlined className="text-green-500!" />
-                  <Text strong>3. Dịch thuật AI (Gemini)</Text>
+                  <Text strong>3. Dịch thuật AI</Text>
                 </Space>
               } 
               key="3"
@@ -175,7 +175,7 @@ const UserGuide = () => {
               <div className="space-y-4!">
                 <Alert
                   message="✨ Không cần cấu hình API Key"
-                  description="Hệ thống sử dụng Gemini AI được cung cấp bởi F1GENZ. Bạn chỉ cần chọn sản phẩm và bấm dịch!"
+                  description="Hệ thống sử dụng AI được cung cấp bởi F1GENZ. Bạn chỉ cần chọn sản phẩm và bấm dịch!"
                   type="success"
                   showIcon
                 />
