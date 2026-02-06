@@ -48,17 +48,9 @@ const Login = () => {
 
   // Fallback UI when OrgID is missing
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column' }}>
-       <h2>Vui lòng nhập Shop Domain (Org ID)</h2>
-       <p>Ví dụ: myshop.myharavan.com hoặc ID cửa hàng</p>
-       <form onSubmit={(e) => {
-          e.preventDefault();
-          const val = e.target.elements.orgid.value;
-          handleManualLogin({ orgid: val });
-       }}>
-          <input name="orgid" placeholder="Nhập ID cửa hàng..." style={{ padding: '10px', width: '300px', marginBottom: '10px' }} required />
-          <button type="submit" style={{ padding: '10px 20px', cursor: 'pointer' }}>Đăng nhập</button>
-       </form>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column', padding: '20px', textAlign: 'center' }}>
+       <h2>Không tìm thấy thông tin cửa hàng</h2>
+       <p>Vui lòng truy cập lại ứng dụng từ trang quản trị Haravan (Haravan Admin).</p>
     </div>
   );
 };
