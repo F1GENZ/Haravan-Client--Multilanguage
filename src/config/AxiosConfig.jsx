@@ -32,7 +32,9 @@ httpClient.interceptors.response.use(
     if (error.response?.status === 401) {
       // Clear session and redirect to Haravan install
       // Redirect to client-side Login page
-      const orgid = sessionStorage.getItem("orgid");
+      const params = new URLSearchParams(window.location.search);
+      const orgid = sessionStorage.getItem("orgid") || params.get('orgid') || params.get('shop');
+      
       sessionStorage.clear(); // Clear old session
       window.location.href = `/install/login?orgid=${orgid || ''}`;
       
