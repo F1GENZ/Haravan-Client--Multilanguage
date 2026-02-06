@@ -34,8 +34,8 @@ httpClient.interceptors.response.use(
       sessionStorage.clear();
       
       // Redirect to Haravan install page
-      const installUrl = `${import.meta.env.VITE_APP_API_URL}/haravan/install`;
-      window.location.href = installUrl;
+      const baseUrl = import.meta.env.VITE_APP_API_URL.replace(/\/$/, ''); // Remove trailing slash
+      window.location.href = `${baseUrl}/haravan/install`;
       
       // Return a never-resolving promise to prevent further error handling
       return new Promise(() => {});
