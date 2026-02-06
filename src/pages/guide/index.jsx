@@ -183,7 +183,7 @@ const UserGuide = () => {
                 <div>
                   <Text strong>Lượt dịch miễn phí:</Text>
                   <ul className="list-disc! pl-6! mt-2! space-y-1!">
-                    <li>Mỗi cửa hàng được cấp <Tag color="blue">500 lượt dịch miễn phí</Tag></li>
+                    <li>Gói dùng thử được cấp <Tag color="blue">10 lượt dịch miễn phí</Tag></li>
                     <li>Xem lượt dịch còn lại tại trang <Tag color="purple">Cài đặt</Tag></li>
                     <li>Liên hệ hỗ trợ để mua thêm lượt dịch nếu cần</li>
                   </ul>
@@ -295,7 +295,7 @@ const UserGuide = () => {
           <div className="text-center!">
             <Title level={4} className="mb-2!">🎉 Bắt đầu ngay!</Title>
             <Paragraph>
-              Vào <Tag color="blue">Cài đặt</Tag> để thiết lập ngôn ngữ và API ChatGPT, 
+              Vào <Tag color="blue">Cài đặt</Tag> để thiết lập ngôn ngữ, 
               sau đó bắt đầu dịch sản phẩm của bạn!
             </Paragraph>
           </div>
