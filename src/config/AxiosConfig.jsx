@@ -36,15 +36,8 @@ httpClient.interceptors.response.use(
       // Try to get orgid from multiple sources: Session -> URL param -> Shop param
       const orgid = sessionStorage.getItem("orgid") || params.get('orgid') || params.get('shop');
       
-      // Do NOT clear session here, we need the orgid!
-      // sessionStorage.clear(); 
-      
-      if (orgid) {
-        window.location.href = `/install/login?orgid=${orgid}`;
-      } else {
-        // If absolutely no orgid found, we might need to rely on the user reloading from Haravan Admin
-        console.error("No orgid found for redirect");
-      }
+      // Redirect to login - with or without orgid
+      window.location.href = orgid ? `/install/login?orgid=${orgid}` : `/install/login`;
       
       // Return a never-resolving promise to prevent further error handling
       return new Promise(() => {});
