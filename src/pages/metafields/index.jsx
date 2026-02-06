@@ -254,8 +254,8 @@ const Metafields = () => {
       // Add empty values for unselected fields (keep original or empty)
       for (const field of customFields) {
         if (!selectedFieldsToTranslate.includes(field.key)) {
-          // Keep original value for unselected fields
-          continue;
+          // Copy original value for unselected fields
+          translatedValues[field.key] = sourceValues[field.key] || '';
         }
         if (!sourceValues[field.key] || !sourceValues[field.key].trim()) {
           translatedValues[field.key] = '';

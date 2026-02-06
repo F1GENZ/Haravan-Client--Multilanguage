@@ -984,12 +984,12 @@ const Settings = () => {
             />
           </Card>
 
-          {/* SECTION 4: Quota dịch thuật */}
+          {/* SECTION 4: Lượt dịch */}
           <Card 
             title={
               <span>
                 <SettingOutlined className="mr-2" />
-                Quota dịch thuật
+                Lượt dịch AI còn lại
               </span>
             }
             className="shadow-sm"

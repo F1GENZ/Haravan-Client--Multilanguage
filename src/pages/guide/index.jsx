@@ -181,11 +181,11 @@ const UserGuide = () => {
                 />
                 
                 <div>
-                  <Text strong>Quota dịch thuật:</Text>
+                  <Text strong>Lượt dịch miễn phí:</Text>
                   <ul className="list-disc! pl-6! mt-2! space-y-1!">
-                    <li>Mỗi cửa hàng được cấp <Tag color="blue">500 bản dịch miễn phí</Tag></li>
-                    <li>Xem quota còn lại tại trang <Tag color="purple">Cài đặt</Tag></li>
-                    <li>Liên hệ hỗ trợ để nâng cấp quota nếu cần</li>
+                    <li>Mỗi cửa hàng được cấp <Tag color="blue">500 lượt dịch miễn phí</Tag></li>
+                    <li>Xem lượt dịch còn lại tại trang <Tag color="purple">Cài đặt</Tag></li>
+                    <li>Liên hệ hỗ trợ để mua thêm lượt dịch nếu cần</li>
                   </ul>
                 </div>
 

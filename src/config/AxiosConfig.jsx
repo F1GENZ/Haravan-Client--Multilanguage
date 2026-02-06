@@ -30,9 +30,15 @@ httpClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      const orgid = sessionStorage.getItem("orgid");
-      // Redirect to login page
-      window.location.href = `/install/login?orgid=${orgid || ''}`;
+      // Clear session and redirect to Haravan install
+      sessionStorage.clear();
+      
+      // Redirect to Haravan install page
+      const installUrl = `${import.meta.env.VITE_APP_API_URL}/haravan/install`;
+      window.location.href = installUrl;
+      
+      // Return a never-resolving promise to prevent further error handling
+      return new Promise(() => {});
     }
     return Promise.reject(error);
   }
