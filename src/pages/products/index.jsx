@@ -9,13 +9,17 @@ import { metafieldsService } from '../../common/MetafieldsServices';
 
 const { Option } = Select;
 
-// Available fields for translation
 const TRANSLATABLE_FIELDS = [
   { key: 'title', label: 'Tiêu đề (Title)', type: 'text' },
   { key: 'product_type', label: 'Loại sản phẩm (Product Type)', type: 'text' },
   { key: 'vendor', label: 'Nhà cung cấp (Vendor)', type: 'text' },
   { key: 'description', label: 'Mô tả (Description)', type: 'html', sourceKey: 'body_html' },
 ];
+
+// Helper function to format numbers with thousand separators
+const formatNumber = (num) => {
+  return num?.toLocaleString('vi-VN') || '0';
+};
 
 const ProductsPage = () => {
   // Use the same hook as metafields page
@@ -403,7 +407,7 @@ const ProductsPage = () => {
             showIcon
             message={
               <span>
-                Quota: <strong>{quota.remaining}</strong> / {quota.total} bản dịch còn lại
+                Quota: <strong>{formatNumber(quota.remaining)}</strong> / {formatNumber(quota.total)} bản dịch còn lại
                 {quota.remaining < 50 && ' - Liên hệ hỗ trợ nếu cần nâng cấp'}
               </span>
             }
@@ -437,7 +441,7 @@ const ProductsPage = () => {
                   type="error"
                   showIcon
                   icon={<WarningOutlined />}
-                  message={`Vượt quota! Cần ${count} bản dịch, còn lại ${quota.remaining}. Liên hệ hỗ trợ.`}
+                  message={`Vượt quota! Cần ${formatNumber(count)} bản dịch, còn lại ${formatNumber(quota.remaining)}. Liên hệ hỗ trợ.`}
                 />
               );
             }

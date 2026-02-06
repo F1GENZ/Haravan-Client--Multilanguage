@@ -10,6 +10,11 @@ const { Title, Text } = Typography;
 const { Option } = Select;
 
 // Quota Display Component with Progress Bar
+// Helper function to format numbers with thousand separators
+const formatNumber = (num) => {
+  return num?.toLocaleString('vi-VN') || '0';
+};
+
 const QuotaDisplay = () => {
   const [quota, setQuota] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -55,7 +60,7 @@ const QuotaDisplay = () => {
         <div className="flex! justify-between! mb-2!">
           <Text strong>Quota đã sử dụng</Text>
           <Text type={isEmpty ? 'danger' : isLow ? 'warning' : 'secondary'}>
-            {quota.used} / {quota.max} bản dịch
+            {formatNumber(quota.used)} / {formatNumber(quota.max)} bản dịch
           </Text>
         </div>
         
@@ -68,7 +73,7 @@ const QuotaDisplay = () => {
         />
         
         <div className="flex! justify-between! mt-2!">
-          <Text type="secondary">Còn lại: <Text strong style={{ color: isEmpty ? '#ff4d4f' : isLow ? '#faad14' : '#52c41a' }}>{quota.remaining}</Text> bản dịch</Text>
+          <Text type="secondary">Còn lại: <Text strong style={{ color: isEmpty ? '#ff4d4f' : isLow ? '#faad14' : '#52c41a' }}>{formatNumber(quota.remaining)}</Text> bản dịch</Text>
           {isEmpty && (
             <Tag color="red">Hết quota</Tag>
           )}
