@@ -1,12 +1,85 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Form, Input, Button, Select, Space, Divider, Typography, message, Table, Modal, Tag, Tabs, Alert } from 'antd';
+import { Card, Form, Input, Button, Select, Space, Divider, Typography, message, Table, Modal, Tag, Tabs, Alert, Progress, Spin } from 'antd';
 import { SettingOutlined, PlusOutlined, EditOutlined, DeleteOutlined, GlobalOutlined, AppstoreOutlined, StarOutlined, InfoCircleOutlined, DollarOutlined } from '@ant-design/icons';
 import { metafieldsService } from '../../common/MetafieldsServices';
 import { useLanguages } from '../../common/LanguageService';
 import { useConfigSettings } from '../../common/ConfigService';
+import httpClient from '../../config/AxiosConfig';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
+
+// Quota Display Component with Progress Bar
+const QuotaDisplay = () => {
+  const [quota, setQuota] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchQuota = async () => {
+      try {
+        const response = await httpClient.get('/api/translate/quota');
+        if (response.data?.success) {
+          setQuota(response.data.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch quota:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchQuota();
+  }, []);
+
+  if (loading) {
+    return <Spin tip="Đang tải..." />;
+  }
+
+  if (!quota) {
+    return <Alert type="warning" message="Không thể tải thông tin quota" />;
+  }
+
+  const usedPercent = Math.round((quota.used / quota.max) * 100);
+  const isLow = quota.remaining < 50;
+  const isEmpty = quota.remaining === 0;
+
+  return (
+    <div className="space-y-4">
+      <Alert
+        message="Liên hệ hỗ trợ nếu cần nâng cấp quota"
+        type="info"
+        showIcon
+        className="mb-4!"
+      />
+      
+      <div className="p-4! bg-gray-50! rounded-lg!">
+        <div className="flex! justify-between! mb-2!">
+          <Text strong>Quota đã sử dụng</Text>
+          <Text type={isEmpty ? 'danger' : isLow ? 'warning' : 'secondary'}>
+            {quota.used} / {quota.max} bản dịch
+          </Text>
+        </div>
+        
+        <Progress 
+          percent={usedPercent} 
+          status={isEmpty ? 'exception' : isLow ? 'active' : 'normal'}
+          strokeColor={isEmpty ? '#ff4d4f' : isLow ? '#faad14' : '#1890ff'}
+          trailColor="#e8e8e8"
+          size="default"
+        />
+        
+        <div className="flex! justify-between! mt-2!">
+          <Text type="secondary">Còn lại: <Text strong style={{ color: isEmpty ? '#ff4d4f' : isLow ? '#faad14' : '#52c41a' }}>{quota.remaining}</Text> bản dịch</Text>
+          {isEmpty && (
+            <Tag color="red">Hết quota</Tag>
+          )}
+          {isLow && !isEmpty && (
+            <Tag color="orange">Sắp hết</Tag>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // Danh sách tất cả ngôn ngữ theo chuẩn ISO 639-1
 const AVAILABLE_LANGUAGES = [
@@ -251,7 +324,6 @@ const AVAILABLE_LANGUAGES = [
 const Settings = () => {
   const [languageForm] = Form.useForm();
   const [fieldForm] = Form.useForm();
-  const [apiForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const [fieldModalVisible, setFieldModalVisible] = useState(false);
@@ -277,25 +349,6 @@ const Settings = () => {
   const updateFieldMutation = metafieldsService.useUpdateField();
   const deleteFieldMutation = metafieldsService.useDeleteField();
 
-  // Load API settings from localStorage
-  const [apiSettings, setApiSettings] = useState(() => {
-    const saved = localStorage.getItem('openai_settings');
-    return saved ? JSON.parse(saved) : {
-      apiKey: '',
-      customPrompt: 'Translate the following text to {targetLanguage}. Keep the same tone and style. Only return the translated text without any explanation:'
-    };
-  });
-
-  // Save API settings to localStorage
-  const handleSaveApiSettings = (values) => {
-    const newSettings = {
-      apiKey: values.apiKey,
-      customPrompt: values.customPrompt || apiSettings.customPrompt
-    };
-    localStorage.setItem('openai_settings', JSON.stringify(newSettings));
-    setApiSettings(newSettings);
-    message.success('Đã lưu cấu hình API!');
-  };
 
   // ============ LANGUAGE FUNCTIONS ============
   const handleAddLanguage = () => {
@@ -820,7 +873,7 @@ const Settings = () => {
 
   return (
     <div className="p-6 bg-gray-50" style={{ minHeight: 'calc(100vh - 64px)' }}>
-      <div className="max-w-6xl mx-auto">
+      <div>
         <div className="mb-8">
           <Title level={2}>
             <SettingOutlined className="mr-2" />
@@ -931,73 +984,17 @@ const Settings = () => {
             />
           </Card>
 
-          {/* SECTION 4: Cấu hình API dịch thuật */}
+          {/* SECTION 4: Quota dịch thuật */}
           <Card 
             title={
               <span>
                 <SettingOutlined className="mr-2" />
-                Cấu hình API dịch thuật (ChatGPT)
+                Quota dịch thuật
               </span>
             }
             className="shadow-sm"
           >
-            {/* Lưu ý bảo mật */}
-            <Alert
-              message="Lưu ý bảo mật quan trọng"
-              description={
-                <div className="space-y-2">
-                  <p className="mb-2">
-                    <strong>🔒 OpenAI API Key và Custom Prompt chỉ được lưu trên máy tính của bạn, không được đồng bộ lên server.</strong>
-                  </p>
-                  <ul className="list-disc pl-5 space-y-1">
-                    <li>API Key <strong>CHỈ TỒN TẠI</strong> trên trình duyệt máy bạn đang dùng</li>
-                    <li>Mỗi máy tính khác nhau cần nhập API Key riêng</li>
-                    <li>Nếu xóa dữ liệu trình duyệt (clear cache), bạn sẽ mất API Key đã nhập</li>
-                    <li><strong>⚠️ Khuyến nghị:</strong> Sao chép và lưu API Key vào sổ tay hoặc file riêng để không phải tìm lại khi cần</li>
-                  </ul>
-                </div>
-              }
-              type="warning"
-              icon={<InfoCircleOutlined />}
-              showIcon
-              className="mb-4!"
-            />
-
-            <Form
-              form={apiForm}
-              layout="vertical"
-              initialValues={apiSettings}
-              onFinish={handleSaveApiSettings}
-            >
-              <Form.Item
-                label="OpenAI API Key"
-                name="apiKey"
-                rules={[{ required: true, message: 'Vui lòng nhập API Key!' }]}
-                extra="Lấy API key tại: https://platform.openai.com/api-keys"
-              >
-                <Input.Password 
-                  placeholder="sk-..." 
-                  autoComplete="off"
-                />
-              </Form.Item>
-
-              <Form.Item
-                label="Custom Prompt (Tùy chỉnh - Không bắt buộc)"
-                name="customPrompt"
-                extra="Yêu cầu bổ sung cho ChatGPT khi dịch. Ví dụ: 'Use formal tone', 'Use marketing language', etc. Để trống nếu không cần."
-              >
-                <Input.TextArea 
-                  rows={4}
-                  placeholder="Ví dụ: Use professional and formal language..."
-                />
-              </Form.Item>
-
-              <Form.Item>
-                <Button type="primary" htmlType="submit">
-                  Lưu cấu hình
-                </Button>
-              </Form.Item>
-            </Form>
+            <QuotaDisplay />
           </Card>
         </div>
 

@@ -15,6 +15,7 @@ const MainLayout = ({ children }) => {
 
   const menuItems = [
     { path: '/', label: '⭐ Giới thiệu' },
+    { path: '/products', label: '📦 Tất cả sản phẩm' },
     { path: '/guide', label: '📑 Hướng dẫn sử dụng' },
     { path: '/settings', label: '🛠️ Cài đặt' },
     { path: '/support', label: '📩 Liên hệ hỗ trợ' },

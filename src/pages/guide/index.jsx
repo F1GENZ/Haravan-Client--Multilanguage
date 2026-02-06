@@ -19,7 +19,7 @@ const { Panel } = Collapse;
 const UserGuide = () => {
   return (
     <div className="p-6! bg-gray-50!" style={{ minHeight: 'calc(100vh - 64px)' }}>
-      <div className="max-w-6xl! mx-auto!">
+      <div>
         
         {/* Header */}
         <div className="mb-8!">
@@ -49,19 +49,19 @@ const UserGuide = () => {
                 icon: <GlobalOutlined />,
               },
               {
-                title: 'Cấu hình trường tùy chỉnh',
-                description: 'Thêm các trường bổ sung cho sản phẩm/bộ sưu tập (nếu cần)',
+                title: 'Cấu hình trường tùy chỉnh (tùy chọn)',
+                description: 'Thêm các trường bổ sung ngoài title/description nếu cần',
                 icon: <AppstoreOutlined />,
               },
               {
-                title: 'Cấu hình API ChatGPT',
-                description: 'Nhập OpenAI API Key để sử dụng tính năng dịch tự động',
-                icon: <ApiOutlined />,
+                title: 'Dịch từng sản phẩm',
+                description: 'Vào Products → chọn sản phẩm → tab ngôn ngữ → Dịch tự động',
+                icon: <TranslationOutlined />,
               },
               {
-                title: 'Bắt đầu dịch',
-                description: 'Vào Products/Collections, chọn item và dịch sang các ngôn ngữ',
-                icon: <TranslationOutlined />,
+                title: 'Dịch hàng loạt',
+                description: 'Chọn nhiều sản phẩm → Dịch hàng loạt → Chọn ngôn ngữ và trường cần dịch',
+                icon: <RocketOutlined />,
               },
             ]}
           />
@@ -167,47 +167,38 @@ const UserGuide = () => {
               header={
                 <Space>
                   <ApiOutlined className="text-green-500!" />
-                  <Text strong>3. Cấu hình API ChatGPT</Text>
+                  <Text strong>3. Dịch thuật AI (Gemini)</Text>
                 </Space>
               } 
               key="3"
             >
               <div className="space-y-4!">
-                <div>
-                  <Text strong>Bước 1: Lấy API Key</Text>
-                  <ol className="list-decimal! pl-6! mt-2! space-y-1!">
-                    <li>Truy cập: <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-blue-500!">platform.openai.com/api-keys</a></li>
-                    <li>Đăng nhập tài khoản OpenAI</li>
-                    <li>Click "Create new secret key"</li>
-                    <li>Sao chép API Key (sk-...)</li>
-                  </ol>
-                </div>
-
-                <div>
-                  <Text strong>Bước 2: Nhập vào ứng dụng</Text>
-                  <ol className="list-decimal! pl-6! mt-2! space-y-1!">
-                    <li>Vào trang <Tag color="blue">Cài đặt</Tag></li>
-                    <li>Cuộn xuống "Cấu hình API dịch thuật (ChatGPT)"</li>
-                    <li>Paste API Key</li>
-                    <li>Tùy chỉnh Prompt (không bắt buộc)</li>
-                    <li>Click "Lưu cấu hình"</li>
-                  </ol>
-                </div>
-
                 <Alert
-                  message="⚠️ Bảo mật quan trọng"
-                  description={
-                    <div className="space-y-1!">
-                      <p>• API Key chỉ lưu trên máy tính của bạn</p>
-                      <p>• KHÔNG đồng bộ lên server</p>
-                      <p>• Mỗi máy tính cần nhập API Key riêng</p>
-                      <p>• Nên sao chép và lưu API Key vào sổ tay để không mất</p>
-                    </div>
-                  }
-                  type="warning"
+                  message="✨ Không cần cấu hình API Key"
+                  description="Hệ thống sử dụng Gemini AI được cung cấp bởi F1GENZ. Bạn chỉ cần chọn sản phẩm và bấm dịch!"
+                  type="success"
                   showIcon
-                  className="mt-4!"
                 />
+                
+                <div>
+                  <Text strong>Quota dịch thuật:</Text>
+                  <ul className="list-disc! pl-6! mt-2! space-y-1!">
+                    <li>Mỗi cửa hàng được cấp <Tag color="blue">500 bản dịch miễn phí</Tag></li>
+                    <li>Xem quota còn lại tại trang <Tag color="purple">Cài đặt</Tag></li>
+                    <li>Liên hệ hỗ trợ để nâng cấp quota nếu cần</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <Text strong>Các trường hỗ trợ dịch:</Text>
+                  <ul className="list-disc! pl-6! mt-2! space-y-1!">
+                    <li><Tag>Title</Tag> - Tiêu đề sản phẩm</li>
+                    <li><Tag>Description</Tag> - Mô tả (giữ nguyên HTML)</li>
+                    <li><Tag>Product Type</Tag> - Loại sản phẩm</li>
+                    <li><Tag>Vendor</Tag> - Nhà cung cấp</li>
+                    <li><Tag>Custom fields</Tag> - Các trường tùy chỉnh</li>
+                  </ul>
+                </div>
               </div>
             </Panel>
 

@@ -1,29 +1,10 @@
-// OpenAI Translation Service via Server Proxy
+// Translation Service via Server Proxy - Gemini API
 import httpClient from "../config/AxiosConfig";
-/**
- * SECURITY NOTE / LƯU Ý BẢO MẬT:
- * - API Key và Custom Prompt được lưu trong localStorage (client-side only)
- * - API Key được gửi qua server proxy để tránh CORS và bảo mật hơn
- * - Mỗi máy tính/trình duyệt cần cấu hình riêng
- * - Nếu xóa cache browser, dữ liệu sẽ bị mất
- * - Khuyến nghị: Backup API Key ở nơi an toàn (password manager)
- * 
- * localStorage keys:
- * - 'openai_settings': { apiKey, customPrompt }
- * - 'app_languages': [{ id, code, name, isDefault }]
- */
 
-// Get API settings from localStorage
-const getApiSettings = () => {
-  const saved = localStorage.getItem('openai_settings');
-  if (saved) {
-    return JSON.parse(saved);
-  }
-  return {
-    apiKey: '',
-    customPrompt: '' // Custom prompt is optional
-  };
-};
+/**
+ * UPDATED: API Key is now managed server-side
+ * No more client-side API key management needed
+ */
 
 // Language code to name mapping
 const LANGUAGE_NAMES = {
@@ -46,10 +27,10 @@ const LANGUAGE_NAMES = {
 };
 
 /**
- * Translate text using OpenAI ChatGPT API via server proxy
+ * Translate a single text field
  * @param {string} text - Text to translate
  * @param {object} options - Translation options
- * @param {string} options.targetLanguage - Target language code from active tab (e.g., 'en', 'fr')
+ * @param {string} options.targetLanguage - Target language code
  * @returns {Promise<string>} Translated text
  */
 export const translateText = async (text, options = {}) => {
@@ -62,19 +43,11 @@ export const translateText = async (text, options = {}) => {
   if (!targetLanguage) {
     throw new Error('Target language is required');
   }
-  
-  const settings = getApiSettings();
-  
-  if (!settings.apiKey) {
-    throw new Error('OpenAI API Key chưa được cấu hình. Vui lòng vào Settings để thiết lập.');
-  }
 
   try {
     const response = await httpClient.post('/api/translate/text', {
       text,
-      targetLanguage,
-      apiKey: settings.apiKey,
-      customPrompt: settings.customPrompt
+      targetLanguage
     });
 
     return response.data.data;
@@ -85,25 +58,9 @@ export const translateText = async (text, options = {}) => {
 };
 
 /**
- * Translate multiple texts in batch
- * @param {string[]} texts - Array of texts to translate
- * @param {object} options - Translation options
- * @returns {Promise<string[]>} Array of translated texts
- */
-export const translateBatch = async (texts, options = {}) => {
-  try {
-    const promises = texts.map(text => translateText(text, options));
-    return await Promise.all(promises);
-  } catch (error) {
-    throw error;
-  }
-};
-
-/**
- * Translate HTML content while preserving tags via server proxy
+ * Translate HTML content while preserving tags
  * @param {string} html - HTML content to translate
  * @param {object} options - Translation options
- * @param {string} options.targetLanguage - Target language code from active tab
  * @returns {Promise<string>} Translated HTML
  */
 export const translateHTML = async (html, options = {}) => {
@@ -116,19 +73,11 @@ export const translateHTML = async (html, options = {}) => {
   if (!targetLanguage) {
     throw new Error('Target language is required');
   }
-  
-  const settings = getApiSettings();
-  
-  if (!settings.apiKey) {
-    throw new Error('OpenAI API Key chưa được cấu hình. Vui lòng vào Settings để thiết lập.');
-  }
 
   try {
     const response = await httpClient.post('/api/translate/html', {
       html,
-      targetLanguage,
-      apiKey: settings.apiKey,
-      customPrompt: settings.customPrompt
+      targetLanguage
     });
 
     return response.data.data;
@@ -138,12 +87,70 @@ export const translateHTML = async (html, options = {}) => {
   }
 };
 
-// Language codes mapping
+/**
+ * OPTIMIZED: Translate multiple fields in a single API request
+ * Reduces N API calls to 1, saving tokens and quota
+ * 
+ * @param {Array<{key: string, value: string, type: 'text' | 'html'}>} fields - Fields to translate
+ * @param {string} targetLanguage - Target language code
+ * @returns {Promise<Object>} Object with key -> translated value mapping
+ */
+export const translateFields = async (fields, targetLanguage) => {
+  if (!fields || fields.length === 0) {
+    return {};
+  }
+  
+  if (!targetLanguage) {
+    throw new Error('Target language is required');
+  }
+
+  try {
+    const response = await httpClient.post('/api/translate/fields', {
+      fields,
+      targetLanguage
+    });
+
+    // Convert array response to object { key: translatedValue }
+    const result = {};
+    if (response.data.success && response.data.data) {
+      for (const item of response.data.data) {
+        if (item.success) {
+          result[item.key] = item.translated;
+        } else {
+          // On error, keep original value
+          const original = fields.find(f => f.key === item.key);
+          result[item.key] = original?.value || '';
+        }
+      }
+    }
+
+    return result;
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
+    throw new Error(errorMessage);
+  }
+};
+
+/**
+ * Legacy: Translate multiple texts in batch (uses individual calls)
+ * @deprecated Use translateFields instead for better performance
+ */
+export const translateBatch = async (texts, options = {}) => {
+  try {
+    const promises = texts.map(text => translateText(text, options));
+    return await Promise.all(promises);
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Export
 export const LANGUAGE_CODES = LANGUAGE_NAMES;
 
 export default {
   translateText,
-  translateBatch,
   translateHTML,
+  translateFields,
+  translateBatch,
   LANGUAGE_CODES,
 };

@@ -5,6 +5,8 @@ import UserGuide from "../pages/guide/index";
 import Support from "../pages/support/index";
 import Login from "../pages/auth/login/index";
 import GrandService from "../pages/auth/grandservice/index";
+import Products from "../pages/products/index";
+import NotFound from "../pages/404/index";
 
 export const routes = [
   {
@@ -12,6 +14,12 @@ export const routes = [
     layout: false,
     isPrivate: false,
     page: <Introduction />,
+  },
+  {
+    path: "/products",
+    layout: false,
+    isPrivate: false,
+    page: <Products />,
   },
   {
     path: "/translator/products",
@@ -59,6 +67,7 @@ export const routes = [
     path: "*",
     layout: false,
     isPrivate: false,
-    page: <Introduction />,
+    page: <NotFound />,
   },
 ];
+

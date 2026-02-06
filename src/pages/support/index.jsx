@@ -7,7 +7,7 @@ const { Title, Paragraph, Text, Link } = Typography;
 const Support = () => {
   return (
     <div className="p-6 bg-gray-50" style={{ minHeight: 'calc(100vh - 64px)' }}>
-      <div className="!max-w-6xl !mx-auto">
+      <div>
         <div className="mb-8">
           <Title level={2}>
             <CustomerServiceOutlined className="mr-2" />

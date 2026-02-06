@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useSearchParams } from "react-router";
 import { useLocation } from "react-router-dom";
-import { Button, Tabs, Flex, Spin, Space, message, Modal } from 'antd';
-import { TranslationOutlined, ExclamationCircleOutlined, CopyOutlined } from '@ant-design/icons';
+import { Button, Tabs, Flex, Spin, Space, message, Modal, Checkbox, Popover } from 'antd';
+import { TranslationOutlined, ExclamationCircleOutlined, CopyOutlined, SettingOutlined } from '@ant-design/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { metafieldsService } from '../../common/MetafieldsServices';
 import { dataService } from '../../common/DataServices';
-import { translateText, translateHTML } from '../../common/TranslateService';
+import { translateFields } from '../../common/TranslateService';
 import { useLanguages } from '../../common/LanguageService';
 import { useConfigSettings } from '../../common/ConfigService';
 import TabMetafields from './tab';
@@ -38,6 +38,29 @@ const Metafields = () => {
   const { productFields, collectionFields, isLoading: configLoading } = useConfigSettings();
   
   const customFields = type === 'product' ? productFields : collectionFields;
+  
+  // Fields selected for translation - load from localStorage or default all
+  const [selectedFieldsToTranslate, setSelectedFieldsToTranslate] = useState(() => {
+    const saved = localStorage.getItem('metafields_translate_fields');
+    return saved ? JSON.parse(saved) : [];
+  });
+  
+  // Sync selectedFieldsToTranslate when customFields changes (only if not already set)
+  useEffect(() => {
+    if (customFields && customFields.length > 0 && selectedFieldsToTranslate.length === 0) {
+      const saved = localStorage.getItem('metafields_translate_fields');
+      if (!saved) {
+        // Default: select all fields
+        setSelectedFieldsToTranslate(customFields.map(f => f.key));
+      }
+    }
+  }, [customFields]);
+
+  // Save to localStorage when selection changes
+  const handleFieldSelectionChange = (selected) => {
+    setSelectedFieldsToTranslate(selected);
+    localStorage.setItem('metafields_translate_fields', JSON.stringify(selected));
+  };
   
   // Create refs dynamically based on languages
   const tabRefs = useRef({});
@@ -148,13 +171,13 @@ const Metafields = () => {
       return;
     }
 
-    // Kiểm tra OpenAI API key
-    const openaiSettings = localStorage.getItem('openai_settings');
+    // Kiểm tra Gemini API key
+    const geminiSettings = localStorage.getItem('gemini_settings');
     let apiKey = '';
     
-    if (openaiSettings) {
+    if (geminiSettings) {
       try {
-        const settings = JSON.parse(openaiSettings);
+        const settings = JSON.parse(geminiSettings);
         apiKey = settings.apiKey || '';
       } catch (e) {
         // Invalid JSON, treat as empty
@@ -163,7 +186,7 @@ const Metafields = () => {
     
     if (!apiKey || apiKey.trim() === '') {
       message.error({
-        content: 'Chưa cấu hình OpenAI API Key! Vui lòng vào Settings → API Configuration để nhập API Key.',
+        content: 'Chưa cấu hình Gemini API Key! Vui lòng vào Settings → API Configuration để nhập API Key.',
         duration: 5,
       });
       return;
@@ -193,33 +216,48 @@ const Metafields = () => {
       // Lấy giá trị từ form nguồn (bên trái)
       const sourceValues = currentRef.getSourceValues();
       
-      // Check if there's any content to translate
-      const hasContent = customFields.some(field => sourceValues[field.key]);
+      // Check if any fields are selected
+      if (selectedFieldsToTranslate.length === 0) {
+        message.warning('Vui lòng chọn ít nhất 1 trường để dịch!');
+        setIsTranslating(false);
+        return;
+      }
+      
+      // Check if there's any content to translate in selected fields
+      const hasContent = customFields.some(field => 
+        selectedFieldsToTranslate.includes(field.key) && sourceValues[field.key]
+      );
       if (!hasContent) {
-        message.warning('Không có nội dung để dịch!');
+        message.warning('Không có nội dung để dịch trong các trường đã chọn!');
         setIsTranslating(false);
         return;
       }
 
       message.loading(`Đang dịch sang ${targetLanguage.name}...`, 0);
       
-      // Dịch tất cả các fields
-      const translatedValues = {};
+      // Build fields array for batch translation (only selected fields)
+      const fieldsToTranslate = customFields
+        .filter(field => 
+          selectedFieldsToTranslate.includes(field.key) && 
+          sourceValues[field.key] && 
+          sourceValues[field.key].trim()
+        )
+        .map(field => ({
+          key: field.key,
+          value: sourceValues[field.key],
+          type: field.fieldType === 'html' ? 'html' : 'text'
+        }));
+
+      // Batch translate all fields in 1 API request
+      const translatedValues = await translateFields(fieldsToTranslate, targetLanguage.code);
       
+      // Add empty values for unselected fields (keep original or empty)
       for (const field of customFields) {
-        const sourceText = sourceValues[field.key];
-        
-        if (sourceText && sourceText.trim()) {
-          if (field.fieldType === 'string') {
-            translatedValues[field.key] = await translateText(sourceText, { 
-              targetLanguage: targetLanguage.code 
-            });
-          } else if (field.fieldType === 'html') {
-            translatedValues[field.key] = await translateHTML(sourceText, { 
-              targetLanguage: targetLanguage.code 
-            });
-          }
-        } else {
+        if (!selectedFieldsToTranslate.includes(field.key)) {
+          // Keep original value for unselected fields
+          continue;
+        }
+        if (!sourceValues[field.key] || !sourceValues[field.key].trim()) {
           translatedValues[field.key] = '';
         }
       }
@@ -228,7 +266,7 @@ const Metafields = () => {
       currentRef.setTranslatedValues(translatedValues);
       
       message.destroy();
-      message.success(`Dịch sang ${targetLanguage.name} thành công!`);
+      message.success(`Dịch sang ${targetLanguage.name} thành công! (${fieldsToTranslate.length} trường)`);
       setIsTranslating(false);
     } catch (error) {
       message.destroy();
@@ -237,14 +275,12 @@ const Metafields = () => {
       // Kiểm tra loại lỗi để hiển thị thông báo cụ thể hơn
       let errorMessage = 'Lỗi khi dịch tự động!';
       
-      if (error.message && error.message.includes('API key')) {
-        errorMessage = 'OpenAI API Key không hợp lệ! Vui lòng kiểm tra lại trong Settings → API Configuration.';
-      } else if (error.message && error.message.includes('quota')) {
-        errorMessage = 'OpenAI API đã hết quota! Vui lòng kiểm tra tài khoản OpenAI của bạn.';
+      if (error.message && error.message.includes('quota')) {
+        errorMessage = 'Đã hết quota dịch thuật! Vui lòng liên hệ hỗ trợ để nâng cấp.';
       } else if (error.message && error.message.includes('network')) {
         errorMessage = 'Lỗi kết nối mạng! Vui lòng kiểm tra internet và thử lại.';
-      } else if (error.response?.status === 401) {
-        errorMessage = 'OpenAI API Key không hợp lệ hoặc đã hết hạn!';
+      } else if (error.response?.status === 402) {
+        errorMessage = 'Đã hết quota dịch thuật! Vui lòng liên hệ hỗ trợ để nâng cấp.';
       } else if (error.response?.status === 429) {
         errorMessage = 'Quá nhiều yêu cầu! Vui lòng đợi một chút và thử lại.';
       } else if (error.message) {
@@ -368,10 +404,52 @@ const Metafields = () => {
             >
               Dùng dữ liệu gốc
             </Button>
+            <Popover
+              title="Chọn trường cần dịch"
+              trigger="click"
+              placement="bottomRight"
+              content={
+                <div style={{ minWidth: 200 }}>
+                  <Checkbox.Group
+                    value={selectedFieldsToTranslate}
+                    onChange={handleFieldSelectionChange}
+                  >
+                    <Space direction="vertical">
+                      {customFields.map(field => (
+                        <Checkbox key={field.key} value={field.key}>
+                          {field.label || field.key}
+                        </Checkbox>
+                      ))}
+                    </Space>
+                  </Checkbox.Group>
+                  <div style={{ marginTop: 12, borderTop: '1px solid #f0f0f0', paddingTop: 8 }}>
+                    <Space size="small">
+                      <Button 
+                        size="small" 
+                        onClick={() => handleFieldSelectionChange(customFields.map(f => f.key))}
+                      >
+                        Chọn tất cả
+                      </Button>
+                      <Button 
+                        size="small" 
+                        onClick={() => handleFieldSelectionChange([])}
+                      >
+                        Bỏ chọn
+                      </Button>
+                    </Space>
+                  </div>
+                </div>
+              }
+            >
+              <Button icon={<SettingOutlined />}>
+                Trường ({selectedFieldsToTranslate.length}/{customFields.length})
+              </Button>
+            </Popover>
             <Button 
               icon={<TranslationOutlined />}
               onClick={handleAutoTranslate}
               loading={isTranslating}
+              disabled={selectedFieldsToTranslate.length === 0}
             >
               Dịch tự động
             </Button>

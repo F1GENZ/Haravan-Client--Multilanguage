@@ -19,7 +19,7 @@ const { Title, Paragraph, Text } = Typography;
 const Introduction = () => {
   return (
     <div className="p-6! bg-gray-50!" style={{ minHeight: 'calc(100vh - 64px)' }}>
-            <div className="max-w-6xl! mx-auto!">
+            <div>
         
         {/* Header */}
         <div className="mb-8!">
@@ -89,7 +89,6 @@ const Introduction = () => {
             className="mt-6!"
             items={[
               {
-                dot: <TranslationOutlined className="text-green-500! text-lg!" />,
                 children: (
                   <div>
                     <Title level={4} className="mb-2!">
@@ -109,7 +108,6 @@ const Introduction = () => {
                 ),
               },
               {
-                dot: <GlobalOutlined className="text-blue-500! text-lg!" />,
                 children: (
                   <div>
                     <Title level={4} className="mb-2!">
@@ -130,7 +128,6 @@ const Introduction = () => {
                 ),
               },
               {
-                dot: <AppstoreOutlined className="text-purple-500! text-lg!" />,
                 children: (
                   <div>
                     <Title level={4} className="mb-2!">
@@ -150,7 +147,6 @@ const Introduction = () => {
                 ),
               },
               {
-                dot: <DollarOutlined className="text-yellow-500! text-lg!" />,
                 children: (
                   <div>
                     <Title level={4} className="mb-2!">
@@ -169,7 +165,6 @@ const Introduction = () => {
                 ),
               },
               {
-                dot: <SafetyOutlined className="text-red-500! text-lg!" />,
                 children: (
                   <div>
                     <Title level={4} className="mb-2!">
