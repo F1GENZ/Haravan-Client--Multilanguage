@@ -5,7 +5,8 @@ const Login = () => {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
-    const orgid = sessionStorage.getItem("orgid");
+    // Prioritize orgid from URL param (passed during 401 redirect)
+    const orgid = params.get('orgid') || sessionStorage.getItem("orgid");
 
     if (code) {
       // Callback from Haravan -> Verify with Backend
