@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useSearchParams } from "react-router";
 import { useLocation, Link } from "react-router-dom";
 import { Button, Tabs, Flex, Spin, Space, message, Modal, Checkbox, Popover } from 'antd';
-import { TranslationOutlined, ExclamationCircleOutlined, CopyOutlined, SettingOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { TranslationOutlined, ExclamationCircleOutlined, CopyOutlined, SettingOutlined, EyeOutlined } from '@ant-design/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { metafieldsService } from '../../common/MetafieldsServices';
 import { dataService } from '../../common/DataServices';
@@ -376,14 +376,18 @@ const Metafields = () => {
       <div className='sticky top-0 h-min-content bg-white p-4 shadow-md z-10'>
         <Flex justify='space-between' align='center' gap={16}>
           <Space>
-            <Link to="/products">
-              <Button icon={<ArrowLeftOutlined />} type="default">
-                {type === 'product' ? '← Sản phẩm' : '← Bộ sưu tập'}
-              </Button>
-            </Link>
             <h2 className='text-lg text-red-600 font-semibold mb-0!'>
               {item_data?.title || 'Chuyển đổi ngôn ngữ'}
             </h2>
+            <Button 
+              icon={<EyeOutlined />} 
+              type="default"
+              href={`https://${sessionStorage.getItem('orgid')}/${type === 'product' ? 'products' : 'collections'}/${item_data?.handle || ''}`}
+              target="_blank"
+              disabled={!item_data?.handle}
+            >
+              Xem {type === 'product' ? 'sản phẩm' : 'bộ sưu tập'}
+            </Button>
           </Space>
           <Space>
             <Button 
