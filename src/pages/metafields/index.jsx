@@ -375,20 +375,9 @@ const Metafields = () => {
     <div className='space-y-2!'>
       <div className='sticky top-0 h-min-content bg-white p-4 shadow-md z-10'>
         <Flex justify='space-between' align='center' gap={16}>
-          <Space>
-            <h2 className='text-lg text-red-600 font-semibold mb-0!'>
-              {item_data?.title || 'Chuyển đổi ngôn ngữ'}
-            </h2>
-            <Button 
-              icon={<EyeOutlined />} 
-              type="default"
-              href={`https://${sessionStorage.getItem('orgid')}/${type === 'product' ? 'products' : 'collections'}/${item_data?.handle || ''}`}
-              target="_blank"
-              disabled={!item_data?.handle}
-            >
-              Xem {type === 'product' ? 'sản phẩm' : 'bộ sưu tập'}
-            </Button>
-          </Space>
+          <h2 className='text-lg text-red-600 font-semibold mb-0!'>
+            {item_data?.title || 'Chuyển đổi ngôn ngữ'}
+          </h2>
           <Space>
             <Button 
               icon={<CopyOutlined />}
