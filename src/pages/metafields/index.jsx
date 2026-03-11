@@ -171,27 +171,6 @@ const Metafields = () => {
       return;
     }
 
-    // Kiểm tra Gemini API key
-    const geminiSettings = localStorage.getItem('gemini_settings');
-    let apiKey = '';
-    
-    if (geminiSettings) {
-      try {
-        const settings = JSON.parse(geminiSettings);
-        apiKey = settings.apiKey || '';
-      } catch (e) {
-        // Invalid JSON, treat as empty
-      }
-    }
-    
-    if (!apiKey || apiKey.trim() === '') {
-      message.error({
-        content: 'Chưa cấu hình Gemini API Key! Vui lòng vào Settings → API Configuration để nhập API Key.',
-        duration: 5,
-      });
-      return;
-    }
-
     if (languages.length === 0) {
       message.error('Chưa có ngôn ngữ nào được cấu hình!');
       return;
